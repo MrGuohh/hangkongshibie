@@ -1,3 +1,3 @@
 
 
-print("This is a project by HS")
+print("This is a project by hs")

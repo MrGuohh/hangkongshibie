@@ -15,16 +15,15 @@ Including another URLconf
 """
 from django.urls import path
 
-from web.views import index
+from myadmin.views import index
 
 urlpatterns = [
-    path('', index.login, name="web_login"),
-    path('login', index.login, name="web_login"),
-    path('dologin', index.dologin, name="web_dologin"),
-    path('logout', index.logout, name="web_logout"),
-    path('buy', index.inbuy, name="web_buy"),
-    path('order', index.inorder, name="web_order"),
-    path('sheet', index.insheet, name="web_sheet"),
-    path('modify', index.modify, name="web_modify"),
-    path('sheetout', index.sheetout, name="web_sheetout"),
+    # 后台首页
+    path('', index.login, name="myadmin_login"),
+    path('login', index.login, name="myadmin_login"),
+    path('dologin', index.dologin, name="myadmin_dologin"),
+    path('logout', index.logout, name="myadmin_logout"),
+    path('upload', index.upload, name="myadmin_upload"),
+    path('dealwith', index.dealwith, name="myadmin_dealwith"),
+    path('download', index.download, name="myadmin_download"),
 ]

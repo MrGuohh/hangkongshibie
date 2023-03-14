@@ -1,110 +1,92 @@
+#后台视图
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse,FileResponse,JsonResponse
+
 from django.shortcuts import redirect
 from django.urls import reverse
 
-#前台首页
-def index(request):
-    '''购票系统首页'''
-    return render(request,'web/index.html')
+from django.http import JsonResponse
 
+import pandas as pd
+# import numpy as pd
+import os
+
+#后台首页
+def index(request):
+    return render(request,'myadmin/login.html')
 
 def login(request):
-    '''加载登录页面'''
-    return render(request,'web/login.html')
+    return render(request,'myadmin/login.html')
 
+# 会员执行登录
 def dologin(request):
     try:
         #根据登录账号获取用户信息
-        telenumber=request.POST['telenumber']
-        password=request.POST['password']
+        adnumber=request.POST['adnumber']
+        passnumber=request.POST['passnumber']
         adminuser=0
-        # 校验当前用户状态
-        if telenumber == "123456" and password=="123":
+        # 校验当前用户状态是否是管理员
+        if adnumber == "123456" and passnumber=="123":
                 # 将当前登录成功用户信息以adminuser这个key放入到session中
             adminuser=1
-            return redirect(reverse('web_index'))
+            return redirect(reverse('myadmin_index'))
         else:
             context={"info":"此用户非后台管理账号！"}
     except Exception as err:
         print(err)
         context={"info":"登录账号不存在！"}
-    return render(request,"web/index.html",context)
+    return render(request,"myadmin/index.html",context)
 
+# 退出登录
 def logout(request):
-    '''加载系统退出操作'''
-    return redirect(reverse('web_login'))
+    return redirect(reverse('myadmin_login'))
 
-def insheet(request):
-    '''加载主页'''
-    return render(request,'web/psheet.html')
 
-def inbuy(request):
-    '''加载购票'''
-    return render(request,'web/buy.html')
+def upload(request):
+    # if request.method == 'POST' :
+    #     # 获取上传的文件
+    #     # and request.FILES['myfile']
+    #     # myfile = request.FILES['myfile']
 
-def inorder(request):
-    '''加载订单'''
-    return render(request,'web/order.html')
+    #     # # 使用 Pandas 读取 CSV 文件
+    #     # df = pd.read_csv(myfile)
 
-def modify(request):
-    '''修改信息'''
-    return render(request,'web/modify.html')
+    #     # 进行相应的处理
+        
+    #     # 返回处理结果
+    #     return HttpResponse('处理成功')
+    return render(request, "myadmin/upload.html")
 
-def sheetout(request):
-    '''加载系统退出操作'''
-    return redirect(reverse('web_index'))
+def download(request):
+    # 文件路径
+    # file_path = '/path/to/processed_file.csv'
 
-# def verify(request):
-#     #引入随机函数模块
-#     import random
-#     from PIL import Image, ImageDraw, ImageFont
-#     #定义变量，用于画面的背景色、宽、高
-#     #bgcolor = (random.randrange(20, 100), random.randrange(
-#     #    20, 100),100)
-#     bgcolor = (242,164,247)
-#     width = 100
-#     height = 25
-#     #创建画面对象
-#     im = Image.new('RGB', (width, height), bgcolor)
-#     #创建画笔对象
-#     draw = ImageDraw.Draw(im)
-#     #调用画笔的point()函数绘制噪点
-#     for i in range(0, 100):
-#         xy = (random.randrange(0, width), random.randrange(0, height))
-#         fill = (random.randrange(0, 255), 255, random.randrange(0, 255))
-#         draw.point(xy, fill=fill)
-#     #定义验证码的备选值
-#     #str1 = 'ABCD123EFGHIJK456LMNOPQRS789TUVWXYZ0'
-#     str1 = 'ABCD123EFGHIJK456LMNOPQRS789TUVWXYZ0'
-#     #随机选取4个值作为验证码
-#     rand_str = ''
-#     for i in range(0, 4):
-#         rand_str += str1[random.randrange(0, len(str1))]
-#     #构造字体对象，ubuntu的字体路径为“/usr/share/fonts/truetype/freefont”
-#     font = ImageFont.truetype('static/arial.ttf', 21)
-#     #font = ImageFont.load_default().font
-#     #构造字体颜色
-#     fontcolor = (255, random.randrange(0, 255), random.randrange(0, 255))
-#     #绘制4个字
-#     draw.text((5, -3), rand_str[0], font=font, fill=fontcolor)
-#     draw.text((25, -3), rand_str[1], font=font, fill=fontcolor)
-#     draw.text((50, -3), rand_str[2], font=font, fill=fontcolor)
-#     draw.text((75, -3), rand_str[3], font=font, fill=fontcolor)
-#     #释放画笔
-#     del draw
-#     #存入session，用于做进一步验证
-#     request.session['verifycode'] = rand_str
-#     """
-#     python2的为
-#     # 内存文件操作
-#     import cStringIO
-#     buf = cStringIO.StringIO()
-#     """
-#     # 内存文件操作-->此方法为python3的
-#     import io
-#     buf = io.BytesIO()
-#     #将图片保存在内存中，文件类型为png
-#     im.save(buf, 'png')
-#     #将内存中的图片数据返回给客户端，MIME类型为图片png
-#     return HttpResponse(buf.getvalue(), 'image/png')
+    # # 检查文件是否存在
+    # if not os.path.exists(file_path):
+    #     return HttpResponse('文件不存在') 
+
+    # # 返回文件
+    # return FileResponse(open(file_path, 'rb'), as_attachment=True, filename='processed_file.csv')
+    return HttpResponse('文件下载成功')
+
+
+def dealwith(request):
+    csv=pd.read_csv('myadmin/views/result.csv',encoding='utf-8')
+    list0=['name','sign','posibility']
+    list1=list(csv["pax_name"])
+    list2=list(csv["emd_lable2"])
+    list3=list(csv["probability"])
+    # if request.method == 'POST':
+    #     # 获取上传的文件
+    #     # myfile = request.FILES['myfile']
+
+    #     # # 使用 Pandas 读取 CSV 文件
+    #     # df = pd.read_csv(myfile)
+
+    #     # 进行相应的处理,
+        
+    #     # 返回处理结果
+    #      return HttpResponse('文件不存在')
+    # else:  
+    data=[{'name':a,"sign":b,"probability":c}for a,b,c in zip(list1,list2,list3)]
+    return JsonResponse({"data":data})
